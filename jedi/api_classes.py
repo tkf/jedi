@@ -175,6 +175,29 @@ class Completion(BaseDefinition):
         line_nr = '' if self.in_builtin_module else '@%s' % self.line_nr
         return '%s: %s%s' % (t, desc, line_nr)
 
+    @property
+    def type(self):
+        """Type of the completion object.
+
+        Possible values are 'module', 'class', 'function', 'parameter',
+        and None."""
+        def isit(*what):
+            try:
+                return self.name.parent.isinstance(what)
+            except AttributeError:
+                return False
+        if isit(parsing.Function, evaluate.Function):
+            return 'function'
+        if isit(parsing.Import):
+            return 'module'
+        if isit(parsing.Class, evaluate.Class):
+            return 'class'
+        if isinstance(self.base, parsing.Module):
+            return 'module'
+        if isinstance(self.base, parsing.Param):
+            return 'parameter'
+        return None
+
     def follow_definition(self):
         """ Returns you the original definitions. I strongly recommend not
         using it for your completions, because it might slow down Jedi. If you
