@@ -311,6 +311,13 @@ class TestFeature(Base):
         any_re"""
         self.assertEqual(self.get_def(s)[0].full_name, 're.RegexObject')
 
+    def test_object_type(self):
+        s = """
+        class MyClass:
+            pass
+        MyCla"""
+        self.assertEqual(self.complete(s)[0].type, 'class')
+
 
 class TestSpeed(Base):
     def _check_speed(time_per_run, number=4, run_warm=True):
